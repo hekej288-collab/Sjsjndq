@@ -1590,7 +1590,7 @@ def render_bot(call: types.CallbackQuery, bot_id: str) -> None:
         f"{bullet('Entry', st['entry'])}\n"
         f"{bullet('PID', st['pid'] or '—')}\n"
         f"{bullet('Uptime', fmt_dur(st['uptime_ms']))}\n"
-        f"{bullet('CPU', f'{st['cpu']:.1f}%')}\n"
+        f"{bullet('CPU', '{:.1f}%'.format(st['cpu']))}\n"
         f"{bullet('Memory', fmt_bytes(st['mem']))}\n"
         f"{bullet('Disk', fmt_bytes(st['size']))}\n"
         f"{bullet('Env vars', len(b.get('env') or {}))}\n"
@@ -1684,7 +1684,7 @@ def render_cron(call: types.CallbackQuery, bot_id: str) -> None:
     cron = b.get("cron") or {}
     txt = (
         f"<b>{G['clock']} Cron — {esc(b['name'])}</b>\n{G['div_eq']}\n"
-        f"{bullet('Restart every', f\"{cron.get('restart_hours')}h\" if cron.get('restart_hours') else '—')}\n"
+        f"{bullet('Restart every', (str(cron.get('restart_hours')) + 'h') if cron.get('restart_hours') else '—')}\n"
         f"{G['div']}\n"
         f"Send <code>restart=6</code> to restart every 6 hours.\n"
         f"Send <code>off</code> to disable.\n"
@@ -1808,7 +1808,7 @@ def render_ghbackup(call: types.CallbackQuery) -> None:
         f"{bullet('Configured', 'yes' if gh_enabled() else 'no')}\n"
         f"{bullet('Repo', GH['repo'] or '—')}\n"
         f"{bullet('Branch', GH['branch'])}\n"
-        f"{bullet('Interval', f\"{GH['interval_min']} min\")}\n"
+        f"{bullet('Interval', str(GH['interval_min']) + ' min')}\n"
         f"{bullet('Auto', 'on' if GH['auto'] else 'off')}\n"
         f"{bullet('Token', 'set' if GH['token'] else 'not set')}\n"
         f"{bullet('Last backup', GH['last'] or '—')}\n"
@@ -1846,7 +1846,7 @@ def render_tgbackup(call: types.CallbackQuery) -> None:
         f"<b>{G['cloud']} Telegram Channel Backup</b>\n{G['div_eq']}\n"
         f"{bullet('Backup chat', tg_backup_chat() or '—')}\n"
         f"{bullet('Auto', 'on' if auto else 'off')}\n"
-        f"{bullet('Interval', f\"{get_setting('tg_backup_interval_h', 6)} h\")}\n"
+        f"{bullet('Interval', str(get_setting('tg_backup_interval_h', 6)) + ' h')}\n"
         f"{G['div']}\n"
         f"Create a private channel, add this bot as admin, then set the chat "
         f"(<code>@handle</code> or <code>-100…</code>).\n"
@@ -2105,7 +2105,7 @@ def gh_deploy_file(call: types.CallbackQuery, repo: str, path: str) -> None:
     threading.Thread(target=_bg, daemon=True).start()
 
 
-def g
+def gh_download_file(call: types.CallbackQuery, repo: str, path: str) -> None:
     ack(call, "Downloading…")
 
     def _bg() -> None:
